@@ -1,0 +1,19 @@
+package com.example.Layared.Architecture.repository;
+
+import com.example.Layared.Architecture.model.User;
+
+import java.util.HashMap;
+import java.util.Map;
+
+public class UserRepository {
+    private Map<String, User> userDatabase = new HashMap<>();
+
+    public User getUserById(String id){
+        return userDatabase.get(id);
+    }
+
+    public void saveUser(User user){
+        userDatabase.put(user.getId(), user);
+    }
+
+}
