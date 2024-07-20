@@ -123,4 +123,4 @@ Bienvenido al repositorio de Ejemplos de Arquitecturas con Spring Boot/NodeJS/La
 
 
 
--   **12 - Pipes and Filters Architecture (Python) :**  La **arquitectura de Pipes and Filters** es un patrón de diseño estructural que organiza tareas de procesamiento en un sistema en etapas secuenciales llamadas “pipes” (tuberías) y “filters” (filtros). La arquitectura de Pipes and Filters divide un proceso en pasos discretos y modulares. Cada filtro se enfoca en una función específica y opera de manera independiente.
+-   **12 - Pipes and Filters Architecture (Python) :**  La arquitectura de Pipes and Filters es un patrón de diseño estructural que organiza tareas de procesamiento en un sistema en etapas secuenciales llamadas “pipes” (tuberías) y “filters” (filtros). La arquitectura de Pipes and Filters divide un proceso en pasos discretos y modulares. Cada filtro se enfoca en una función específica y opera de manera independiente.
