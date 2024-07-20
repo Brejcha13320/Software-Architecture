@@ -57,3 +57,5 @@ Bienvenido al repositorio de Ejemplos de Arquitecturas con Spring Boot/NodeJS/La
 - **Peer To Peer Architecture (Python) :** La **arquitectura peer-to-peer (P2P)** es un tipo de red en la que cada nodo (o “peer”) puede actuar tanto como servidor como cliente. En otras palabras, en una red P2P, todos los dispositivos conectados pueden compartir recursos directamente entre sí sin depender de un servidor central.
 
 - **Cloud Based Architecture (Python) :** La arquitectura de nube se refiere a la estructura de tecnologías informáticas diseñadas para proporcionar recursos y servicios computacionales a través de Internet. En otras palabras, es el plano técnico que define cómo se integran diferentes componentes para crear entornos de cloud computing.
+
+- **Component Based Architecture (NodeJS) :** La arquitectura basada en componentes es un enfoque de diseño de software que organiza y estructura un sistema en términos de componentes independientes y reutilizables. Cada componente es una unidad autónoma que encapsula una funcionalidad específica y puede ser desarrollado, probado, desplegado y mantenido de forma independiente.
