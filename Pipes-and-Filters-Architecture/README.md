@@ -1,181 +1,107 @@
 
-<p align="center">
-  <img src="https://cdn.worldvectorlogo.com/logos/laravel-2.svg" width="160" alt="NodeJS Logo" />
+  
+
+<p  align="center">
+
+<img  src="https://www.python.org/static/community_logos/python-logo.png"  width="160"  alt="NodeJS Logo"  />
+
 </p>
 
-# Monolithic Architecture
 
-La arquitectura orientada a eventos en Laravel se puede implementar utilizando el sistema de eventos y listeners. A continuación, te muestro un ejemplo detallado paso a paso.
+#  Pipes and Filters Architecture
 
-## Paso 1: Crear un Proyecto de Laravel
-Primero, necesitas crear un nuevo proyecto de Laravel. Si no tienes Laravel instalado, puedes hacerlo utilizando Composer:
+En este ejemplo, vamos a construir un sistema que procese una cadena de texto de la siguiente manera:
+
+Imaginemos que queremos procesar una lista de números realizando las siguientes operaciones secuencialmente:
+
+1.  **Convertir a minúsculas**: Convierte todas las letras mayúsculas a minúsculas.
+2.  **Eliminar puntuación**: Elimina los signos de puntuación.
+3.  **Dividir en palabras**: Divide el texto en palabras.
+4.  **Eliminar palabras vacías**: Elimina palabras comunes como "el", "la", "y", etc.
+5.  **Contar palabras**: Cuenta la frecuencia de cada palabra.
+
+
 ```
-composer create-project --prefer-dist laravel/laravel EventDrivenApp
-cd EventDrivenApp
+import string
+from collections import Counter
+
+def convertir_a_minusculas(texto):
+    """Convierte todas las letras mayúsculas a minúsculas."""
+    return texto.lower()
+
+def eliminar_puntuacion(texto):
+    """Elimina los signos de puntuación del texto."""
+    return texto.translate(str.maketrans('', '', string.punctuation))
+
+def dividir_en_palabras(texto):
+    """Divide el texto en palabras."""
+    return texto.split()
+
+def eliminar_palabras_vacias(palabras, palabras_vacias):
+    """Elimina palabras vacías (comunes) de la lista de palabras."""
+    return [palabra for palabra in palabras if palabra not in palabras_vacias]
+
+def contar_palabras(palabras):
+    """Cuenta la frecuencia de cada palabra."""
+    return Counter(palabras)
+
+def tuberia(datos, filtros):
+    """Pasa los datos a través de una serie de filtros."""
+    for filtro in filtros:
+        datos = filtro(datos)
+    return datos
+
+# Texto de entrada
+texto_inicial = "Hola, mundo! Este es un ejemplo de arquitectura de Tuberías y Filtros. Hola de nuevo!"
+
+# Lista de palabras vacías
+palabras_vacias = {'es', 'un', 'de', 'y'}
+
+# Definición de los filtros
+filtros = [
+    convertir_a_minusculas,
+    eliminar_puntuacion,
+    dividir_en_palabras,
+    lambda palabras: eliminar_palabras_vacias(palabras, palabras_vacias),
+    contar_palabras
+]
+
+# Procesar el texto a través de la tubería de filtros
+resultado = tuberia(texto_inicial, filtros)
+
+# Imprimir el resultado final
+print(resultado)
 ```
 
-## Paso 2: Configurar la Base de Datos
-Configura la conexión a la base de datos en el archivo `.env`:
-```
-DB_CONNECTION=mysql
-DB_HOST=127.0.0.1
-DB_PORT=3306
-DB_DATABASE=event_driven_app
-DB_USERNAME=root
-DB_PASSWORD=
-```
-## Paso 3: Crear una Migración y un Modelo
-Crea una tabla para almacenar los datos que generarán eventos. Por ejemplo, una tabla de `orders`:
-```
-php artisan make:model Order -m
-```
-Luego, edita la migración generada en `database/migrations/xxxx_xx_xx_create_orders_table.php`:
-```
-public function up()
-{
-    Schema::create('orders', function (Blueprint $table) {
-        $table->id();
-        $table->string('product_name');
-        $table->integer('quantity');
-        $table->timestamps();
-    });
-}
-```
-Ejecuta la migración:
-```
-php artisan make:event OrderCreated
-```
-## Paso 4: Crear un Evento
-Crea un evento llamado `OrderCreated`:
-```
-php artisan make:event OrderCreated
-```
-Edita el evento generado en `app/Events/OrderCreated.php`:
-```
-namespace App\Events;
+##  Explicación del Código
 
-use App\Models\Order;
-use Illuminate\Broadcasting\InteractsWithSockets;
-use Illuminate\Foundation\Events\Dispatchable;
-use Illuminate\Queue\SerializesModels;
+-   **Filtros:**
+    
+    -   `convertir_a_minusculas`: Convierte todas las letras mayúsculas del texto a minúsculas.
+    -   `eliminar_puntuacion`: Elimina los signos de puntuación del texto.
+    -   `dividir_en_palabras`: Divide el texto en una lista de palabras.
+    -   `eliminar_palabras_vacias`: Elimina palabras comunes (palabras vacías) de la lista de palabras.
+    -   `contar_palabras`: Cuenta la frecuencia de cada palabra en la lista.
+-   **Tubería:**
+    
+    -   La función `tuberia` toma los datos y los pasa secuencialmente a través de cada filtro. En este caso, el texto pasa por cada una de las transformaciones definidas en los filtros.
+-   **Datos de entrada:**
+    
+    -   `texto_inicial` contiene el texto que será procesado.
+    -   `palabras_vacias` contiene las palabras comunes que se eliminarán del texto.
+-   **Definición de la secuencia de filtros:**
+    
+    -   La lista `filtros` define el orden en el que los datos pasarán por los filtros. Para el filtro `eliminar_palabras_vacias`, utilizamos una función lambda para pasar el segundo argumento (la lista de palabras vacías).
+-   **Procesamiento:**
+    
+    -   El texto inicial se procesa a través de la tubería de filtros utilizando la función `tuberia`.
+-   **Salida:**
+    
+    -   El resultado final se imprime en la consola.
 
-class OrderCreated
-{
-    use Dispatchable, InteractsWithSockets, SerializesModels;
+```
+Counter({'hola': 2, 'mundo': 1, 'este': 1, 'ejemplo': 1, 'arquitectura': 1, 'tuberías': 1, 'filtros': 1, 'nuevo': 1})
 
-    public $order;
+```
 
-    public function __construct(Order $order)
-    {
-        $this->order = $order;
-    }
-}
-```
-## Paso 5: Crear un Listener
-Crea un listener llamado `SendOrderNotification`:
-```
-php artisan make:listener SendOrderNotification --event=OrderCreated
-```
-Edita el listener generado en `app/Listeners/SendOrderNotification.php`:
-```
-namespace App\Listeners;
 
-use App\Events\OrderCreated;
-use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Support\Facades\Mail;
-use App\Mail\OrderNotification;
-
-class SendOrderNotification
-{
-    public function handle(OrderCreated $event)
-    {
-        // Lógica para enviar una notificación por correo electrónico
-        Mail::to('admin@example.com')->send(new OrderNotification($event->order));
-    }
-}
-```
-## Paso 6: Registrar el Evento y el Listener
-Registra el evento y el listener en `app/Providers/EventServiceProvider.php`:
-```
-protected $listen = [
-    'App\Events\OrderCreated' => [
-        'App\Listeners\SendOrderNotification',
-    ],
-];
-```
-## Paso 7: Crear un Mail
-Crea una clase de correo electrónico para enviar la notificación:
-```
-php artisan make:mail OrderNotification
-```
-Edita el correo electrónico generado en `app/Mail/OrderNotification.php`:
-```
-namespace App\Mail;
-
-use App\Models\Order;
-use Illuminate\Bus\Queueable;
-use Illuminate\Mail\Mailable;
-use Illuminate\Queue\SerializesModels;
-
-class OrderNotification extends Mailable
-{
-    use Queueable, SerializesModels;
-
-    public $order;
-
-    public function __construct(Order $order)
-    {
-        $this->order = $order;
-    }
-
-    public function build()
-    {
-        return $this->view('emails.order_notification')
-                    ->with([
-                        'productName' => $this->order->product_name,
-                        'quantity' => $this->order->quantity,
-                    ]);
-    }
-}
-```
-Crea una vista para el correo electrónico en
-`resources/views/emails/order_notification.blade.php`:
-```
-<p>New Order Created:</p>
-<p>Product Name: {{ $productName }}</p>
-<p>Quantity: {{ $quantity }}</p>
-```
-## Paso 8: Despachar el Evento
-En el controlador donde creas una nueva orden, despacha el evento `OrderCreated`. Por ejemplo, en `OrderController.php`:
-```
-namespace App\Http\Controllers;
-
-use App\Models\Order;
-use App\Events\OrderCreated;
-use Illuminate\Http\Request;
-
-class OrderController extends Controller
-{
-    public function store(Request $request)
-    {
-        $order = Order::create([
-            'product_name' => $request->input('product_name'),
-            'quantity' => $request->input('quantity'),
-        ]);
-
-        event(new OrderCreated($order));
-
-        return response()->json(['message' => 'Order created successfully']);
-    }
-}
-```
-## Paso 9: Probar la Implementación
-Para probar la implementación, puedes crear una orden enviando una solicitud POST a `orders`:
-```
-curl -X POST http://yourapp.test/orders \
-     -H "Content-Type: application/json" \
-     -d '{"product_name": "Product 1", "quantity": 10}'
-```
-sto debería crear una nueva orden y despachar el evento `OrderCreated`, que a su vez activará el listener `SendOrderNotification` y enviará un correo electrónico de notificación.
-Este es un ejemplo completo y detallado de cómo implementar una arquitectura orientada a eventos en Laravel. Puedes expandir este ejemplo añadiendo más eventos y listeners según sea necesario para tu aplicación.
